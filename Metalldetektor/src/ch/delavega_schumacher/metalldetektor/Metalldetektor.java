@@ -110,7 +110,7 @@ public class Metalldetektor extends Activity implements SensorEventListener{
 			taskname = "Metalldetektor";
 			logMessage = qrCode;
 			
-			Intent Logger = Log.log(this, taskname, qrCode);
+			Intent Logger = Log.log(this, taskname, logMessage);
 			startActivity(Logger);
 		}
 		catch(Exception ex)

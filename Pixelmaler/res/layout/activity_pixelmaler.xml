@@ -7,18 +7,18 @@
     android:orientation="vertical"
     tools:context=".Pixelmaler" >
 
-    <ch.delavega_schumacher.pixelmaler.SquareLayout
+    <ch.delavega_schumacher.appquestfunctions.android.drawing.SquareLayout
         android:id="@+id/SquareLayout1"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
-        <ch.delavega_schumacher.pixelmaler.DrawingView
+        <ch.delavega_schumacher.appquestfunctions.android.drawing.DrawingView
             android:id="@+id/drawing"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="#FFFFFFFF" />
-    </ch.delavega_schumacher.pixelmaler.SquareLayout>
+    </ch.delavega_schumacher.appquestfunctions.android.drawing.SquareLayout>
 
     <LinearLayout
         android:id="@+id/LinearLayout2"

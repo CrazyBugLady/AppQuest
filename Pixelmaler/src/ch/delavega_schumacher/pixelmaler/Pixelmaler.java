@@ -1,8 +1,12 @@
 package ch.delavega_schumacher.pixelmaler;
 
+import ch.delavega_schumacher.appquestfunctions.Logging.Logbook;
+import ch.delavega_schumacher.appquestfunctions.android.Application;
+import ch.delavega_schumacher.appquestfunctions.android.drawing.DrawingView;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,6 +18,9 @@ public class Pixelmaler extends Activity {
 
 	private DrawingView drawingView;
 	private ImageButton currentBrush;
+	
+	private Logbook log = Logbook.getInstance();
+	private Application application = Application.getInstance();
 
 	public void eraseClicked(View view) {
 		if (view != currentBrush) {
@@ -73,7 +80,7 @@ public class Pixelmaler extends Activity {
 
 			@Override
 			public boolean onMenuItemClick(MenuItem item) {
-				onLogAction();
+				log();
 				return false;
 			}
 		});
@@ -93,8 +100,21 @@ public class Pixelmaler extends Activity {
 		drawingView.setErase(false);
 	}
 
-	private void onLogAction() {
-		// TODO
+	private void log() {
+		try
+		{
+			String taskname, logMessage;
+		
+			taskname = "Pixelmaler";
+			logMessage = "Insert the points";
+			
+			Intent Logger = log.log(this, taskname, logMessage);
+			startActivity(Logger);
+		}
+		catch(Exception ex)
+		{
+			application.showErrors(this, "The Logging didn't work for some reason, please contact the administrator.");
+		}
 	}
 
 }

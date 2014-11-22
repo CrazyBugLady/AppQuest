@@ -1,5 +1,9 @@
 package ch.delavega_schumacher.appquestfunctions.android.drawing;
 
+import java.util.ArrayList;
+
+import org.json.JSONArray;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -24,6 +28,8 @@ public class DrawingView extends View {
 	private Paint drawPaint = new Paint();
 	private Paint linePaint = new Paint();
 	private boolean isErasing = false;
+	
+	private ArrayList<Point> points = new ArrayList<Point>();
 
 	public DrawingView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -48,7 +54,37 @@ public class DrawingView extends View {
 		final int stepSizeX = (int) Math.ceil((double) maxX / GRID_SIZE);
 		final int stepSizeY = (int) Math.ceil((double) maxY / GRID_SIZE);
 
-		// TODO Zeichne das Gitter
+		int currentPointX = stepSizeX;
+		int currentPointY = stepSizeY;
+		
+		for(int step = 0; step < GRID_SIZE; step++)
+		{
+			// x Linien zeichnen, bei denen Starty immer = 0 ist
+			canvas.drawLine(currentPointX, 0, currentPointX, maxY, linePaint);
+			// y Linien zeichnen, bei denen Startx immer = 0 ist
+			canvas.drawLine(0, currentPointY, maxX, currentPointY, linePaint);
+			
+			currentPointX = currentPointX + stepSizeX;
+			currentPointY = currentPointY + stepSizeY;
+			
+			// TODO: Punkte direkt hier überprüfen
+		}
+		
+		// überprüfen der einzelnen Punkte
+		for(int pointH = 0; pointH < GRID_SIZE; pointH++)
+		{
+			for(int pointS = 0; pointS < GRID_SIZE; pointS++)
+			{
+				// Punkt 0 - 10/0 - 10
+				for(Point point : points)
+				{
+					if(point.getPointXAxis(stepSizeX) == pointH && point.getPointXAxis(stepSizeY) == pointS)
+					{
+						// TODO der Punkt muss gezeichnet werden
+					}
+				}
+			}
+		}
 
 		// Zeichnet einen Pfad der dem Finger folgt
 		canvas.drawPath(drawPath, drawPaint);
@@ -63,7 +99,10 @@ public class DrawingView extends View {
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
 			drawPath.moveTo(touchX, touchY);
-
+			
+			Point pNew = new Point(touchX, touchY, drawPaint.getColor());
+			points.add(pNew);
+			
 			// TODO wir müssen uns die berührten Punkte zwischenspeichern
 
 			break;
@@ -95,7 +134,7 @@ public class DrawingView extends View {
 
 		invalidate();
 	}
-
+	
 	public void setErase(boolean isErase) {
 		isErasing = isErase;
 		if (isErasing) {
