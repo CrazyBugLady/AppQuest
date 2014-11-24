@@ -106,14 +106,14 @@ public class Pixelmaler extends Activity {
 			String taskname, logMessage;
 		
 			taskname = "Pixelmaler";
-			logMessage = "Insert the points";
+			logMessage = drawingView.getJSONPoints().toString();
 			
 			Intent Logger = log.log(this, taskname, logMessage);
 			startActivity(Logger);
 		}
 		catch(Exception ex)
 		{
-			application.showErrors(this, "The Logging didn't work for some reason, please contact the administrator.");
+			application.showErrors(this, getString(R.string.error_logging_not_possible));
 		}
 	}
 

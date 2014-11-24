@@ -17,18 +17,28 @@ public class Point {
 	
 	public int getPointXAxis(int xSize)
 	{
-		return (int) Math.ceil((double) touchX / xSize);
+		return (int) Math.round((double) touchX / xSize);
 	}
 	
 	public int getPointYAxis(int ySize)
 	{
-		return (int) Math.ceil((double) touchY / ySize);
+		return (int) Math.round((double) touchY / ySize);
+	}
+	
+	public String getColorHex()
+	{
+		return String.format("#%06X", (0xFFFFFF & color)) + "FF";
+	}
+	
+	public int getColor()
+	{
+		return color;
 	}
 	
 	public JSONObject getJSONPoint(int xSize, int ySize) throws JSONException
 	{
 		JSONObject PointObject = new JSONObject();
-		PointObject.put("color", color);
+		PointObject.put("color", getColorHex());
 		PointObject.put("x", getPointXAxis(xSize));
 		PointObject.put("y", getPointYAxis(ySize));
 		

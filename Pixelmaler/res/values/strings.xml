@@ -8,4 +8,6 @@
     <string name="save">Save</string>
     <string name="paint">Paint</string>
 
+    <!-- Errors -->
+    <string name="error_logging_not_possible">The Logging didn\'t work for some reason, please contact the administrator.</string>
 </resources>

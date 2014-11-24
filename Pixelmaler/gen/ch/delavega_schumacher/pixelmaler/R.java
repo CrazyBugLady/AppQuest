@@ -26,11 +26,12 @@ public final class R {
         public static final int LinearLayout2=0x7f080003;
         public static final int SquareLayout1=0x7f080001;
         public static final int color10=0x7f080007;
+        public static final int color11=0x7f080008;
         public static final int color8=0x7f080005;
         public static final int color9=0x7f080006;
         public static final int defaultColor=0x7f080004;
         public static final int drawing=0x7f080002;
-        public static final int erase_btn=0x7f080008;
+        public static final int erase_btn=0x7f080009;
     }
     public static final class layout {
         public static final int activity_pixelmaler=0x7f030000;
@@ -39,6 +40,9 @@ public final class R {
         public static final int action_settings=0x7f040001;
         public static final int app_name=0x7f040000;
         public static final int erase=0x7f040003;
+        /**  Errors 
+         */
+        public static final int error_logging_not_possible=0x7f040006;
         public static final int paint=0x7f040005;
         public static final int save=0x7f040004;
         public static final int start_new=0x7f040002;

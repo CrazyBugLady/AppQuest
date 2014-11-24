@@ -24,7 +24,7 @@
         android:id="@+id/LinearLayout2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:weightSum="5" >
+        android:weightSum="6" >
 
         <ImageButton
             android:id="@+id/defaultColor"
@@ -66,6 +66,16 @@
             android:onClick="paintClicked"
             android:tag="#FF000000" />
 
+         <ImageButton
+            android:id="@+id/color11"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#FFff1493"
+            android:contentDescription="@string/paint"
+            android:onClick="paintClicked"
+            android:tag="#FFff1493" />
+        
         <ImageButton
             android:id="@+id/erase_btn"
             android:layout_width="0dp"
@@ -75,6 +85,7 @@
             android:background="@drawable/eraser"
             android:contentDescription="@string/erase"
             android:onClick="eraseClicked" />
+       
 
     </LinearLayout>
 
