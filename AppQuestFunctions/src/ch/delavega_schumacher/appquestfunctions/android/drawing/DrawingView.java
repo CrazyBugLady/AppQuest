@@ -1,11 +1,18 @@
 package ch.delavega_schumacher.appquestfunctions.android.drawing;
 
+
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-
-import ch.delavega_schumacher.appquestfunctions.Mathematics.Trigonometry.RectangularTriangle;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -37,9 +44,9 @@ public class DrawingView extends View {
 	private Paint linePaint = new Paint();
 	private boolean isErasing = false;
 
-	private Bitmap currentImage = null;
+	private Bitmap currentPainting = null;
 
-	private ArrayList<Point> points = new ArrayList<Point>();
+	private HashMap<String, Point> points = new HashMap<String, Point>();
 
 	public DrawingView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -69,6 +76,16 @@ public class DrawingView extends View {
 		int currentPointX = sizeStepX;
 		int currentPointY = sizeStepY;
 
+		// überprüfen der einzelnen Punkte
+
+		for(Entry<String, Point> pointEntry : points.entrySet()) {
+			Point point = (Point)pointEntry.getValue();
+
+			pointfillerPaint.setColor(point.getColor()); // Pinsel, der nur zum letztendlichen Ausmalen verwendet wird
+
+			canvas.drawRect(point.getPointXAxis(sizeStepX) * sizeStepX, point.getPointYAxis(sizeStepY) * sizeStepY, (point.getPointXAxis(sizeStepX) + 1) * sizeStepX, (point.getPointYAxis(sizeStepY) + 1) * sizeStepY, pointfillerPaint);  
+		}
+
 		for(int step = 0; step < GRID_SIZE; step++)
 		{
 			// x Linien zeichnen, bei denen Starty immer = 0 ist
@@ -79,14 +96,6 @@ public class DrawingView extends View {
 			currentPointX = currentPointX + sizeStepX;
 			currentPointY = currentPointY + sizeStepY;
 
-		}
-
-		// überprüfen der einzelnen Punkte
-		for(Point point : points)
-		{
-			pointfillerPaint.setColor(point.getColor()); // Pinsel, der nur zum letztendlichen Ausmalen verwendet wird
-
-			canvas.drawRect(point.getPointXAxis(sizeStepX) * sizeStepX, point.getPointYAxis(sizeStepY) * sizeStepY, (point.getPointXAxis(sizeStepX) + 1) * sizeStepX, (point.getPointYAxis(sizeStepY) + 1) * sizeStepY, pointfillerPaint);
 		}
 
 		// Zeichnet einen Pfad der dem Finger folgt
@@ -103,27 +112,14 @@ public class DrawingView extends View {
 		case MotionEvent.ACTION_DOWN:
 			drawPath.moveTo(touchX, touchY);
 
-			Point tempPNew = new Point(touchX, touchY, drawPaint.getColor()); // wird nur gespeichert, wenn nicht isErasing = true ist
-			removeFromPoints(tempPNew.getPointXAxis(sizeStepX), tempPNew.getPointXAxis(sizeStepY)); // absichern, dass ein Punkt nicht einfach doppelt gesetzt und somit übermalt wird
-
-			if(!isErasing) {
-				points.add(tempPNew);
-			}
-
+			savePoint(touchX, touchY);
 			break;
 		case MotionEvent.ACTION_MOVE:
 			drawPath.lineTo(touchX, touchY);
 
-			// TODO wir müssen uns die berührten Punkte zwischenspeichern
-
+			savePoint(touchX, touchY);
 			break;
 		case MotionEvent.ACTION_UP:
-
-			// TODO Jetzt können wir die zwischengespeicherten Punkte auf das
-
-			// Gitter umrechnen und zeichnen, bzw. löschen, falls isErasing
-			// true ist (optional)
-
 			drawPath.reset();
 			break;
 		default:
@@ -133,11 +129,27 @@ public class DrawingView extends View {
 		return true;
 	}
 
+	public void savePoint(float touchX, float touchY)
+	{	
+		Point tempPNew = new Point(touchX, touchY, drawPaint.getColor()); // wird nur gespeichert, wenn nicht isErasing = true ist
+
+		int X = tempPNew.getPointXAxis(sizeStepX);
+		int Y = tempPNew.getPointYAxis(sizeStepY);
+
+		if(X <= (GRID_SIZE-1) && X >= 0 && Y <= (GRID_SIZE - 1) && Y >= 0)
+		{	
+			points.put(X + "/" + Y, tempPNew);
+
+			if(isErasing) {
+				removeFromPoints(tempPNew);
+			}
+		}
+	}
+
 	// Fürs Teilen über Whatsapp oder dergleichiges
+	// TODO weiterverwenden für Teilen auf Whatsapp oder dergleichigem
 	public Bitmap getImage()
 	{
-		Bitmap currentPainting = null;
-
 		this.setDrawingCacheEnabled(true);
 		this.buildDrawingCache();
 
@@ -146,40 +158,47 @@ public class DrawingView extends View {
 		return currentPainting;
 	}
 
-	public void removeFromPoints(int PointX, int PointY)
+	public void removeFromPoints(Point pointToRemove)
 	{
-		ArrayList<Point> tempListPoints = new ArrayList<Point>();     
-		for(Point pointToDelete : points)
+		try 
 		{
-			// angenommen unser Punkt, den wir löschen wollen ist 0 / 1 dann kommt 1 / 1 durch oder 1 / 0 aber 0 / 1 nicht 
-			if (pointToDelete.getPointXAxis(this.sizeStepX) == PointX && pointToDelete.getPointYAxis(this.sizeStepY) == PointY) // wenn beide übereinstimmen
-			{
-				// nicht hinzufügen
+			for(Iterator<Map.Entry<String,Point>>it=points.entrySet().iterator();it.hasNext();){
+				Map.Entry<String, Point> entry = it.next();
+				if (entry.getValue() == pointToRemove) {
+					it.remove();
+				}
 			}
-			else
-			{
-				tempListPoints.add(pointToDelete);
-			}
+		}
+		catch(Exception ex)
+		{
 
 		}
-		points = tempListPoints;
 	}
 
 	public JSONArray getJSONPoints() throws JSONException
 	{
 		JSONArray PointArray = new JSONArray();
 
-		for(Point PointObject : points)
+		for(int x = 0; x < GRID_SIZE; x++)
 		{
-			PointArray.put(PointObject.getJSONPoint(sizeStepX, sizeStepY));
-		}
+			for(int y = 0; y < GRID_SIZE; y++)
+			{
+				try{
+					Point point = points.get(x + "/" + y);
+					PointArray.put(point.getJSONPoint(sizeStepX, sizeStepY));}
+				catch(Exception ex)
+				{
+					// Just go to next shit you dense motherfucker
+				}
+			}
 
+		}
 		return PointArray;
 	}
 
 	public void startNew() {
 
-		points = new ArrayList<Point>();
+		points = new HashMap<String, Point>();
 
 		invalidate();
 	}
